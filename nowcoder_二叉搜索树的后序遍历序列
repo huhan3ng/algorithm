@@ -1,0 +1,26 @@
+class Solution {
+public:
+    bool VerifySquenceOfBST(vector<int> sequence) {
+        if(sequence.size()==0){
+            return false;
+        }
+		return subVeri(sequence, 0, sequence.size());
+    }
+    
+    bool subVeri(vector<int> &sequence, int h, int t){
+		if((t-h)<=1){
+            return true;
+        } else {
+            int mid = sequence[t-1], cut=h, i=0;
+            while(sequence[cut]<sequence[t-1]){
+                cut++;
+            }
+            for(i=cut;i<(t-1);i++){
+             	if(sequence[i]<=sequence[t-1]){
+                    return false;
+                }
+            }
+            return subVeri(sequence, h, cut) && subVeri(sequence, cut, t-1);
+        }
+    }
+};

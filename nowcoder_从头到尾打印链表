@@ -1,0 +1,32 @@
+/**
+*  struct ListNode {
+*        int val;
+*        struct ListNode *next;
+*        ListNode(int x) :
+*              val(x), next(NULL) {
+*        }
+*  };
+*/
+class Solution {
+public:
+    vector<int> printListFromTailToHead(ListNode* head) {
+        if(head==NULL){
+            return vector<int>(0);
+        }
+        int i=1;
+        ListNode* cur = head;
+        while(cur){
+            cur = cur->next;
+            i++;
+        }
+        i--;
+        vector<int> v(i);
+        cur = head;
+        while(cur){
+            v[i-1] = cur->val;
+            i--;
+            cur = cur->next;
+        }
+        return v;
+    }
+};
