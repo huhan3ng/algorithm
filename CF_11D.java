@@ -14,22 +14,37 @@ import java.util.StringTokenizer;
 public class CF_11D {
     int[] l2;    //长度为2的连线
     int[] li;    //长度为i的连线
-    int n, m, a, b, count;
+    int n, m, a, b, count2, countI; //n定点数 m边数
 
-    public void solve() throws Exception{
+    public void solve() throws Exception {
         n = nextInt();
         m = nextInt();
-        l2 = new int[200];
-        li = new int[200];
-        for(int i=0;i<m;i++){
+        l2 = new int[m];
+        li = new int[400];
+        for (int i = 0; i < m; i++) {
             a = nextInt();
             b = nextInt();
-            l2[i] = l2[i] | 1<<a | 1<<b;
+            l2[i] = l2[i] | 1 << (19-a) | 1 << (19-b);
+            li[i] = li[i] | 1 << (19-a) | 1 << (19-b);
         }
-        count = m;
-        for(int i=0;i<n;i++){
-            for(int j=0;j<count;j++){
-                li[j] = 
+        countI = count2 = m;
+        int[] tmp;
+        int t;
+        for (int i = 3; i <= n; ++i, li = tmp, countI = t) {
+            tmp = new int[200];
+            t = 0;
+            for (int pli = 0; pli < countI; pli++) {
+                for (int pl2 = 0; pl2 < count2; ++pl2) {
+//                    if(((l2[pl2]&(l2[pl2]-1)) | (li[pli]&~(li[pli]-1))) == (l2[pl2]&(l2[pl2]-1))){  //最低位1连上最高位1
+//                        tmp[t++] = li[pli] | l2[pl2];
+//                        writer.println(Integer.toBinaryString(0x10000 | tmp[t-1]).substring(1));
+//                    }
+                    if(((li[pli]&~(li[pli]-1)) & l2[pl2]) !=0 && (li[pli] | l2[pl2]) != l2[pli]){
+                        tmp[t++] = li[pli] | l2[pl2];
+                        writer.println(Integer.toBinaryString(0x10000000 | tmp[t-1]).substring(1));
+                        writer.flush();
+                    }
+                }
             }
         }
     }
