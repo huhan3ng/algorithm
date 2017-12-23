@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 /**
  * Created by huhansan on 2017/12/19.
  * http://codeforces.com/problemset/problem/11/D
- * 参考 Petr http://codeforces.com/contest/11/submission/47646
+ * bitmask存储参考 Petr http://codeforces.com/contest/11/submission/47646
  * 求所有不同的环的个数
  * 首先按长度分 C = C1+C2+...+Cn
  * 长度为i的环的数量的求解， 规定一个顺序，以最小值开头，按开头不同分治，再按不同结尾分治
