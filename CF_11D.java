@@ -7,46 +7,62 @@ import java.util.StringTokenizer;
 /**
  * Created by huhansan on 2017/12/19.
  * http://codeforces.com/problemset/problem/11/D
- * int bitmask 存储点与点连接关系， dp计算长度从3-n的连线，并筛选出可以成环的，顶点最多19个, O(m^2)
- * ArrayList要是可以存 int 就好了
+ * 参考 Petr http://codeforces.com/contest/11/submission/47646
+ * 求所有不同的环的个数
+ * 首先按长度分 C = C1+C2+...+Cn
+ * 长度为i的环的数量的求解， 规定一个顺序，以最小值开头，按开头不同分治，再按不同结尾分治
+ * 遍历所有排列，如果长度为i的排列成环，则对应的Ci值+1
+ * 遍历方式的选择：
+ * 1.integer实现bitmask，从1加到1<<n
+ * 2.递归
  */
 
 public class CF_11D {
-    int[] l2;    //长度为2的连线
-    int[] li;    //长度为i的连线
-    int n, m, a, b, count2, countI; //n定点数 m边数
+    long[][] ways;  //ways[mask][endPointIndex]
+    boolean[][] connect;
+    int n, m, lowestIndex, mask;    //n 节点数， m边数    00000...0  <--> n:n-1:n-2.....1 bitmask
+    private static int HEAD_POINT_INDEX = 0;
 
     public void solve() throws Exception {
+        int a, b;
+        long total = 0;
         n = nextInt();
         m = nextInt();
-        l2 = new int[m];
-        li = new int[400];
+        connect = new boolean[n][n];
+        ways = new long[1 << n][n];
         for (int i = 0; i < m; i++) {
             a = nextInt();
             b = nextInt();
-            l2[i] = l2[i] | 1 << (19-a) | 1 << (19-b);
-            li[i] = li[i] | 1 << (19-a) | 1 << (19-b);
+            connect[a - 1][b - 1] = true;
+            connect[b - 1][a - 1] = true;
         }
-        countI = count2 = m;
-        int[] tmp;
-        int t;
-        for (int i = 3; i <= n; ++i, li = tmp, countI = t) {
-            tmp = new int[200];
-            t = 0;
-            for (int pli = 0; pli < countI; pli++) {
-                for (int pl2 = 0; pl2 < count2; ++pl2) {
-//                    if(((l2[pl2]&(l2[pl2]-1)) | (li[pli]&~(li[pli]-1))) == (l2[pl2]&(l2[pl2]-1))){  //最低位1连上最高位1
-//                        tmp[t++] = li[pli] | l2[pl2];
-//                        writer.println(Integer.toBinaryString(0x10000 | tmp[t-1]).substring(1));
-//                    }
-                    if(((li[pli]&~(li[pli]-1)) & l2[pl2]) !=0 && (li[pli] | l2[pl2]) != l2[pli]){
-                        tmp[t++] = li[pli] | l2[pl2];
-                        writer.println(Integer.toBinaryString(0x10000000 | tmp[t-1]).substring(1));
-                        writer.flush();
+        for (int i = 0; i < n; i++) {
+            ways[1 << i][i] = 1;  //初始化，单定点也视为环
+        }
+        for (mask = 1; mask < 1 << n; mask++) {
+            int tmp = mask, cnt = 0;
+            while (tmp > 0) {
+                tmp = tmp & (tmp - 1);
+                cnt++;
+            }
+            lowestIndex = -1;
+            for (int endPointIndex = 0; endPointIndex < n; endPointIndex++) {
+                if ((mask & 1 << endPointIndex) != 0) {
+                    if (lowestIndex < 0) {
+                        lowestIndex = endPointIndex;
+                    } else if (lowestIndex != endPointIndex) {
+                        for (int i = lowestIndex; i < n; i++)
+                            if (connect[i][endPointIndex]) {
+                                ways[mask][endPointIndex] += ways[mask & ~(1 << endPointIndex)][i]; // P[(1,2,3)4]的数量 == 其它+P[1,2,3]的数量， 也就是1,2,3三个点可以组成的以1开头的排列数
+                            }
+                        if (connect[endPointIndex][lowestIndex] && cnt > 2) {  //以首尾定点分治，存在对称性，如 1-2-3-4-1 == 1-4-3-2-1
+                            total += ways[mask][endPointIndex];
+                        }
                     }
                 }
             }
         }
+        writer.println(total / 2);
     }
 
     public static void main(String[] args) {
