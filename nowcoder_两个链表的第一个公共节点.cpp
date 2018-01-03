@@ -6,7 +6,8 @@ struct ListNode {
 			val(x), next(NULL) {
 	}
 };*/
-class Solution {
+// 更优解法：两个链表有公共节点，那从公共节点开始后面都一样，包括一样长。也就是让两个链表尾部对其，从短的那条头部开始一对一找
+class Solution {	//23333 2B解法
 public:
     ListNode* FindFirstCommonNode( ListNode* pHead1, ListNode* pHead2) {
         int flag = 100000007;
